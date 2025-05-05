@@ -15,6 +15,7 @@ class Data:
         
         self.parameters = _parameters
 
+        print(self.parameters)
         self.dbPath = self.get_dataBase_path()
 
         
@@ -35,34 +36,30 @@ class Data:
         with open(file_path,'r', encoding='utf-8') as file:
             
             dbPath = file.read()
-
-        return Path(dbPath) 
+            # print(dbPath)
+        return dbPath 
     
     def get_simulation_prices(self):
-
+        
         conn = sqlite3.connect(self.dbPath)
 
-        # SQL Query
-        query = """
-            SELECT 
-                ap.asset,
-                ap.date,
-                ap.adjClose
-            FROM 
-                AssetPrice ap
-            JOIN 
-                ApplicationAsset aa ON ap.asset = aa.asset
-            WHERE 
-                aa.app = ? AND
-                ap.date BETWEEN ? AND ?
-            ORDER BY 
-                ap.asset, ap.date;
-        """
+        try:
+            # SQL Query
+            query = f'''
+            SELECT ap.date, aa.asset, ap.close
+            FROM AssetPrice ap
+            JOIN ApplicationAsset aa ON ap.asset = aa.asset
+            WHERE aa.app = '{self.parameters.app}'
+            '''
 
-        df = pd.read_sql_query(query, conn, params=(app, date1, date2))
+            df = pd.read_sql_query(query, conn)
 
-        print(df)
-        conn.close()
+            print(df)
+            conn.close()
+        except Exception as e:
+            print('The was an error with the market data database')
+            print(f'Erro: {e}')
+            conn.close()
         return None
     
     def get_simulation_returns():
