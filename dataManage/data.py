@@ -15,16 +15,20 @@ class Data:
         
         self.parameters = _parameters
 
-        print(self.parameters)
+        # print(self.parameters)
         self.dbPath = self.get_dataBase_path()
 
         
-        print(f"[DEBUG] Caminho do banco de dados: {self.dbPath}")
-        print(f"[DEBUG] Arquivo existe? {os.path.exists(self.dbPath)}")
+        # print(f"[DEBUG] Caminho do banco de dados: {self.dbPath}")
+        # print(f"[DEBUG] Arquivo existe? {os.path.exists(self.dbPath)}")
 
         self.simulation_prices = self.get_simulation_prices()
 
-        print(self.simulation_prices)
+        # print(self.simulation_prices)
+
+        self.inSampleDates, self.outOfSampleDates = self.get_simulation_dates()
+
+        self.rebalanceDates = self.get_rebalance_dates()
 
         pass
 
@@ -44,29 +48,75 @@ class Data:
         conn = sqlite3.connect(self.dbPath)
 
         try:
-            # SQL Query
-            query = f'''
-            SELECT ap.date, aa.asset, ap.close
-            FROM AssetPrice ap
-            JOIN ApplicationAsset aa ON ap.asset = aa.asset
-            WHERE aa.app = '{self.parameters.app}'
-            '''
 
+            query = f"""
+                SELECT 
+                    ap.asset,
+                    ap.date,
+                    ap.close
+                FROM 
+                    AssetPrice ap
+                JOIN 
+                    ApplicationAsset aa ON ap.asset = aa.asset
+                WHERE 
+                    aa.app = '{self.parameters.app}' AND
+                    ap.date BETWEEN '{self.parameters.date1}' AND '{self.parameters.date2}'
+                ORDER BY 
+                    ap.asset, ap.date;
+            """
             df = pd.read_sql_query(query, conn)
 
-            print(df)
             conn.close()
+
+            df_pivot = df.pivot(index='date', columns='asset', values='close')
+
+            # print(df_pivot)
+
+            df_pivot.index = pd.to_datetime(df_pivot.index)
+
+            return df_pivot
+        
         except Exception as e:
+
             print('The was an error with the market data database')
             print(f'Erro: {e}')
             conn.close()
-        return None
-    
-    def get_simulation_returns():
 
-        return None
-    
-    def get_simulation_dates():
+            return None
+        pass
 
-        return None
+    def get_simulation_returns(self,prices):
+        
+        returns = prices.pct_change().iloc[1:]
+
+        return returns
     
+    def get_simulation_dates(self):
+
+        inSampleDates = self.simulation_prices.index[:self.parameters.inSample]
+        outOfSampleDates = self.simulation_prices.index[self.parameters.inSample:]
+
+        # print(inSampleDates)
+        # print(outOfSampleDates)
+
+        return inSampleDates, outOfSampleDates
+    
+    def get_rebalance_dates(self):
+
+        rebalanceDates = self.simulation_prices.index[self.parameters.inSample::self.parameters.rebalance]
+        
+        return rebalanceDates
+    
+
+    def print_dates(self):
+
+        print(f'In Sample Dates (First {self.parameters.inSample} dates) \n')
+        print(self.inSampleDates)
+
+        print(f'Out of Sample Dates \n')
+        print(self.outOfSampleDates)
+
+        print(self.rebalanceDates)
+
+        pass
+

@@ -15,8 +15,11 @@ file_path = config_dir / 'parameters.txt'
 
 from scripts.readTxt import read_txt
 
+from scripts.backtest import backtest as bt
+
 from dataManage.parameters import Parameters
 from dataManage.data import Data
+
 
 if __name__ == '__main__':
 
@@ -25,3 +28,5 @@ if __name__ == '__main__':
     parameters = Parameters(txt)
     
     data = Data(parameters)
+
+    bt(parameters,data)
