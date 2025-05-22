@@ -9,6 +9,7 @@ sys.path.append(str(Path(__file__).resolve().parent.parent))
 
 from simulationManager.simulation import Simulation
 from simulationManager.results import Results
+from simulationManager.rebalance import Rebalance
 
 def backtest(parameters,data):
 
@@ -18,9 +19,13 @@ def backtest(parameters,data):
 
     
     for date in data.outOfSampleDates:
+
+        if date in data.rebalanceDates:
         
-        print('****** Simulation ****** \n')
-        
+            rebalance = Rebalance(data, date)
+
+            
+
         results.portfolioValue = parameters.investment
 
         

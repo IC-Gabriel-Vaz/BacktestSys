@@ -22,11 +22,11 @@ class Data:
         # print(f"[DEBUG] Caminho do banco de dados: {self.dbPath}")
         # print(f"[DEBUG] Arquivo existe? {os.path.exists(self.dbPath)}")
 
-        self.simulation_prices = self.get_simulation_prices()
+        self.simulationPrices = self.get_simulation_prices()
 
         # print(self.simulation_prices)
 
-        self.inSampleDates, self.outOfSampleDates = self.get_simulation_dates()
+        self.alldates, self.inSampleDates, self.outOfSampleDates = self.get_simulation_dates()
 
         self.rebalanceDates = self.get_rebalance_dates()
 
@@ -70,8 +70,6 @@ class Data:
 
             df_pivot = df.pivot(index='date', columns='asset', values='close')
 
-            # print(df_pivot)
-
             df_pivot.index = pd.to_datetime(df_pivot.index)
 
             return df_pivot
@@ -93,17 +91,18 @@ class Data:
     
     def get_simulation_dates(self):
 
-        inSampleDates = self.simulation_prices.index[:self.parameters.inSample]
-        outOfSampleDates = self.simulation_prices.index[self.parameters.inSample:]
+        allDates = self.simulationPrices.index
+        inSampleDates = self.simulationPrices.index[:self.parameters.inSample]
+        outOfSampleDates = self.simulationPrices.index[self.parameters.inSample:]
 
         # print(inSampleDates)
         # print(outOfSampleDates)
 
-        return inSampleDates, outOfSampleDates
+        return allDates, inSampleDates, outOfSampleDates
     
     def get_rebalance_dates(self):
 
-        rebalanceDates = self.simulation_prices.index[self.parameters.inSample::self.parameters.rebalance]
+        rebalanceDates = self.simulationPrices.index[self.parameters.inSample::self.parameters.rebalance]
         
         return rebalanceDates
     
