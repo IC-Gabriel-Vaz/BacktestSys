@@ -1,25 +1,18 @@
-# Ignorar a pasta de ambiente virtual
 venv/
 
-# Ignorar todos os arquivos da pasta config, mas manter a pasta
 config/*
 !config/.gitkeep
 
-# Ignorar toda a pasta dataBases
 dataBases/
 
-# Ignorar arquivos compilados e cache
 __pycache__/
 *.py[cod]
 
-# Ignorar arquivos temporários e de log
 *.log
 *.tmp
 
-# Ignorar configurações de IDEs
 .vscode/
 .idea/
 
-# Ignorar arquivos do sistema
 .DS_Store
 Thumbs.db
