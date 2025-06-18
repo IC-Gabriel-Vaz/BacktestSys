@@ -29,4 +29,4 @@ if __name__ == '__main__':
     
     data = Data(parameters)
 
-    bt(parameters,data)
+    

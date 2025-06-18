@@ -11,7 +11,7 @@ class Parameters:
         self.date2 = txt['date2']
         self.inSample = int(txt['inSample'])
         self.rebalance = int(txt['rebalance'])
-        self.investment = int(txt['investment'])
+        self.investment = float(txt['investment'])
         self.transactionCosts  = float(txt['transactionCosts'])
 
     def __repr__(self):

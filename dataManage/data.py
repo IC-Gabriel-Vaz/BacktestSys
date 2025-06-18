@@ -18,7 +18,6 @@ class Data:
         # print(self.parameters)
         self.dbPath = self.get_dataBase_path()
 
-        
         # print(f"[DEBUG] Caminho do banco de dados: {self.dbPath}")
         # print(f"[DEBUG] Arquivo existe? {os.path.exists(self.dbPath)}")
 
