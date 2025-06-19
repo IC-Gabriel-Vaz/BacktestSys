@@ -25,11 +25,15 @@ class Simulation():
     def execute(self):
 
         for date in self.data.outOfSampleDates:
-
+            
             if date == self.data.outOfSampleDates[0]:
                 self.portfolioValue = self.data.parameters.investment
+                print(f'{date}: {self.portfolioValue}')
+
             else:
+
                 self.portfolioValue = self.get_portfolio_value(date,rebalance)
+                print(f'{date}: {self.portfolioValue}')
 
             if date in self.data.rebalanceDates:
                 
@@ -39,16 +43,17 @@ class Simulation():
 
                 plugin = rebalance.load_plugin(class_name=self.data.parameters.plugin)
 
-                print(rebalance.rebalance_prices)
-            
+                weights = plugin.get_weights()
+
+                capital_per_asset = {asset: weights[asset]*self.data.parameters.investment for asset in rebalance.assets}
+                       
         pass
+    
+    def get_portfolio_value(self, date, rebalance):
+        
+        
+        return pv
 
-    def get_portfolio_value(self,date, rebalance):
-
-            if date == self.data.outOfSampleDates[0]:
-                return self.data.parameters.investment
-            else:
-                pass
                 
 
 

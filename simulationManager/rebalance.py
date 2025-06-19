@@ -21,6 +21,8 @@ class Rebalance:
         self.inSamplePrices = self.get_in_sample_prices()
 
         self.outOfSamplePrices = self.get_out_of_sample_prices()
+
+        self.assets = list(self.rebalance_prices.columns)
         
         pass
 
@@ -60,14 +62,53 @@ class Rebalance:
         def get_valid_date(target_date):
             return index[index <= target_date].max() if not index[index <= target_date].empty else index[0]
 
-        start_date = get_valid_date(self.date - dt.timedelta(self.data.parameters.inSample))
-        end_date = get_valid_date(self.date + dt.timedelta(self.data.parameters.rebalance))
+        pos = index.get_indexer([get_valid_date(self.date)])[0]
+
+        start_pos = max(0, pos - self.data.parameters.inSample)
+        end_pos = min(len(index) - 1, pos + self.data.parameters.rebalance)
+
+        start_date = index[start_pos]
+        end_date = index[end_pos]
 
         df = self.data.simulationPrices.loc[start_date:end_date]
 
+        threashold = 0.2
+
+        prices = df.loc[:, df.isnull().mean() < threashold]
+
+        prices = prices.ffill()
+
+        prices = prices.bfill()
+
+        return prices
+
+
+    def get_out_of_sample_prices(self):
+
+        df = self.rebalance_prices.loc[self.date:]
+
         return df
+    
 
+    def get_in_sample_prices(self):
 
+        df = self.rebalance_prices.loc[:self.date - dt.timedelta(1)]
+
+        return df
+    
+    def get_rebalance_returns(self):
+
+        threashold = 0.2
+
+        prices = self.rebalance_prices.loc[:, self.rebalance_prices.isnull().mean() < threashold]
+
+        prices = prices.ffill()
+
+        prices = prices.bfill()
+
+        df = prices.pct_change().dropna()
+
+        return df 
 
 
 

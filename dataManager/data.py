@@ -37,10 +37,25 @@ class Data:
         return dbPath 
     
     def get_simulation_prices(self):
-        
+
         conn = sqlite3.connect(self.dbPath)
 
         try:
+            query_dates = f"""
+                SELECT DISTINCT ap.date
+                FROM AssetPrice ap
+                JOIN ApplicationAsset aa ON ap.asset = aa.asset
+                WHERE aa.app = '{self.parameters.app}' AND ap.date < '{self.parameters.date1}'
+                ORDER BY ap.date DESC
+                LIMIT {self.parameters.inSample}
+            """
+            date_df = pd.read_sql_query(query_dates, conn)
+
+            if not date_df.empty:
+                
+                start_date = date_df['date'].min()
+            else:
+                start_date = self.parameters.date1
 
             query = f"""
                 SELECT 
@@ -53,28 +68,19 @@ class Data:
                     ApplicationAsset aa ON ap.asset = aa.asset
                 WHERE 
                     aa.app = '{self.parameters.app}' AND
-                    ap.date BETWEEN '{self.parameters.date1}' AND '{self.parameters.date2}'
+                    ap.date BETWEEN '{start_date}' AND '{self.parameters.date2}'
                 ORDER BY 
                     ap.asset, ap.date;
             """
             df = pd.read_sql_query(query, conn)
 
-            conn.close()
-
             df_pivot = df.pivot(index='date', columns='asset', values='close')
-
             df_pivot.index = pd.to_datetime(df_pivot.index)
 
             return df_pivot
-        
-        except Exception as e:
 
-            print('The was an error with the market data database')
-            print(f'Erro: {e}')
+        finally:
             conn.close()
-
-            return None
-        pass
 
     def get_simulation_returns(self,prices):
         

@@ -1,7 +1,6 @@
 from plugin import Plugin
 
 
-
 class EqualWeights(Plugin):
     
     def __init__(self, rebalance):
