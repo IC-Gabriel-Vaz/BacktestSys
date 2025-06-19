@@ -15,15 +15,9 @@ class Data:
         
         self.parameters = _parameters
 
-        # print(self.parameters)
         self.dbPath = self.get_dataBase_path()
 
-        # print(f"[DEBUG] Caminho do banco de dados: {self.dbPath}")
-        # print(f"[DEBUG] Arquivo existe? {os.path.exists(self.dbPath)}")
-
         self.simulationPrices = self.get_simulation_prices()
-
-        # print(self.simulation_prices)
 
         self.alldates, self.inSampleDates, self.outOfSampleDates = self.get_simulation_dates()
 
@@ -39,7 +33,7 @@ class Data:
         with open(file_path,'r', encoding='utf-8') as file:
             
             dbPath = file.read()
-            # print(dbPath)
+            
         return dbPath 
     
     def get_simulation_prices(self):
@@ -90,9 +84,9 @@ class Data:
     
     def get_simulation_dates(self):
 
-        allDates = self.simulationPrices.index
-        inSampleDates = self.simulationPrices.index[:self.parameters.inSample]
-        outOfSampleDates = self.simulationPrices.index[self.parameters.inSample:]
+        allDates = list(self.simulationPrices.index)
+        inSampleDates = list(self.simulationPrices.index[:self.parameters.inSample])
+        outOfSampleDates = list(self.simulationPrices.index[self.parameters.inSample:])
 
         # print(inSampleDates)
         # print(outOfSampleDates)
@@ -115,6 +109,12 @@ class Data:
         print(self.outOfSampleDates)
 
         print(self.rebalanceDates)
+
+        pass
+
+    def print_data(self):
+
+        print(f"Prices Data Frame: \n {self.simulationPrices}")
 
         pass
 

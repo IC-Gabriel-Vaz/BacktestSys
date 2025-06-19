@@ -15,10 +15,10 @@ file_path = config_dir / 'parameters.txt'
 
 from scripts.readTxt import read_txt
 
-from scripts.backtest import backtest as bt
+from dataManager.parameters import Parameters
+from dataManager.data import Data
 
-from dataManage.parameters import Parameters
-from dataManage.data import Data
+from simulationManager.simulation import Simulation
 
 
 if __name__ == '__main__':
@@ -29,4 +29,9 @@ if __name__ == '__main__':
     
     data = Data(parameters)
 
-    
+    if parameters.transactionCosts == 0:
+
+        simulation = Simulation(data)
+
+        simulation.execute()
+

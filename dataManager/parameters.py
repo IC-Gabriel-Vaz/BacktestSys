@@ -13,7 +13,10 @@ class Parameters:
         self.rebalance = int(txt['rebalance'])
         self.investment = float(txt['investment'])
         self.transactionCosts  = float(txt['transactionCosts'])
+        self.plugin = txt['plugin']
 
     def __repr__(self):
-        return (f"Parameters(app={self.app}, date1={self.date1}, date2={self.date2}, "
-                f"rebalance={self.rebalance}, in_sample={self.inSample})")
+        return (f"Parameters: \n app={self.app},\n date1 = {self.date1}, date2 = {self.date2}, \n "
+                f"Rebalance Frequency = {self.rebalance}, \n In sample period = {self.inSample},\n "
+                f"Investment={self.investment}, \n "
+                f"Transaction Costs = {self.transactionCosts}")
