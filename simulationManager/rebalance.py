@@ -23,6 +23,7 @@ class Rebalance:
         self.outOfSamplePrices = self.get_out_of_sample_prices()
 
         self.assets = list(self.rebalance_prices.columns)
+
         
         pass
 

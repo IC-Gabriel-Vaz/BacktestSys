@@ -1,5 +1,6 @@
 import pandas as pd
 import numpy as np
+import matplotlib.pyplot as plt
 
 from datetime import datetime , timedelta
 from pathlib import Path
@@ -31,7 +32,29 @@ if __name__ == '__main__':
 
     if parameters.transactionCosts == 0:
 
+
         simulation = Simulation(data)
 
         simulation.execute()
+
+        performance_series = pd.Series(simulation.performance)
+
+        # Ensure the index is in datetime format and sorted
+        performance_series.index = pd.to_datetime(performance_series.index)
+        performance_series = performance_series.sort_index()
+
+        # Plot with formatting
+        plt.figure(figsize=(12, 6))
+        plt.plot(performance_series.index, performance_series.values, label='Performance')
+        plt.xlabel('Date')
+        plt.ylabel('Value')
+        plt.title('Simulation Performance Over Time')
+        plt.grid(True)
+        plt.legend()
+
+        plt.gcf().autofmt_xdate()  # Auto-format the x-axis labels
+        plt.tight_layout()
+        plt.show()
+
+
 
