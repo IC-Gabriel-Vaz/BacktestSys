@@ -39,11 +39,9 @@ if __name__ == '__main__':
 
         performance_series = pd.Series(simulation.performance)
 
-        # Ensure the index is in datetime format and sorted
         performance_series.index = pd.to_datetime(performance_series.index)
         performance_series = performance_series.sort_index()
 
-        # Plot with formatting
         plt.figure(figsize=(12, 6))
         plt.plot(performance_series.index, performance_series.values, label='Performance')
         plt.xlabel('Date')
@@ -52,7 +50,7 @@ if __name__ == '__main__':
         plt.grid(True)
         plt.legend()
 
-        plt.gcf().autofmt_xdate()  # Auto-format the x-axis labels
+        plt.gcf().autofmt_xdate()
         plt.tight_layout()
         plt.show()
 
