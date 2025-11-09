@@ -116,39 +116,32 @@ class Corr_Model(Plugin):
                 count += 1
             if count >= 3:
                 break
-        # --- união de todos os destaques ---
+
         highlight_nodes = set(invest)
 
         print("Nós destacados:", highlight_nodes)
 
-        # --- layout fixo ---
         pos = nx.spring_layout(self.G, weight='weight', seed=42)
 
-        # --- tamanho dos nós (usa eigenvector normalizado) ---
         vals = np.array([self.eigenvector.get(n, 0.0) for n in self.G.nodes()])
-        spread = np.ptp(vals)  # ou ptp(vals)
+        spread = np.ptp(vals) 
         node_sizes = np.full(len(vals), 300.0)
     
-        # --- cor dos nós: destaque = crimson, resto = lightgray ---
         node_color_map = ["crimson" if n in highlight_nodes else "#1f77b4" for n in self.G.nodes()]
 
-        # --- espessura das arestas proporcional ao peso ---
         edge_weights = [
             max(0.4, float(data.get("weight", 0.0)) * 2.0)
             for _, _, data in self.G.edges(data=True)
         ]
 
-        # --- plot ---
         fig, ax = plt.subplots(figsize=(10, 7))
         nx.draw_networkx_edges(self.G, pos, ax=ax, width=edge_weights, alpha=0.6)
         nx.draw_networkx_nodes(self.G, pos, node_size=node_sizes,
                             node_color=node_color_map, edgecolors="k", linewidths=0.8)
 
-        # --- rótulos só dos destacados ---
         labels = {n: n for n in highlight_nodes}
         nx.draw_networkx_labels(self.G, pos, labels=labels, font_size=10, font_weight="bold", ax=ax)
 
-        # --- legenda ---
         legend = mpatches.Patch(color="crimson")
         ax.legend(handles=[legend], loc="upper right")
 
@@ -157,7 +150,7 @@ class Corr_Model(Plugin):
         plt.tight_layout()
         plt.show()
 
-        aaaa
+
     def get_lowest_n(self, d, n=3):
         return dict(sorted(d.items(), key=lambda item: item[1])[:n])
     
