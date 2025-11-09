@@ -46,29 +46,36 @@ class Simulation():
                 print(f'{date}: {self.portfolioValue}')
 
             if date in self.data.rebalanceDates:
-                
+    
                 print('******** Rebalance ********\n')
 
                 self.last_rebalance_date = date
 
                 rebalance = Rebalance(self.data, date)
 
-                # print(rebalance.inSamplePrices)
-                
-                # print(rebalance.outOfSamplePrices)
-
-                # print(rebalance.rebalance_prices)
-
                 plugin = rebalance.load_plugin(class_name=self.data.parameters.plugin)
 
                 self.weights[date] = plugin.get_weights()
 
-                self.capital_per_asset[date] = {asset: self.weights[date][asset]*self.portfolioValue for asset in rebalance.assets}
+                print(f'Weights: {self.weights[date]}')
+                self.capital_per_asset[date] = {
+                    asset: self.weights[date][asset] * self.portfolioValue
+                    for asset in rebalance.assets
+                }
 
-                self.shares_per_asset[date] = {asset: self.capital_per_asset[date][asset]/rebalance.rebalance_prices.loc[date][asset] for asset in rebalance.assets}
+                self.shares_per_asset[date] = {
+                    asset: self.capital_per_asset[date][asset] / rebalance.rebalance_prices.loc[date][asset]
+                    for asset in rebalance.assets
+                }
                 
-        pass
-    
+        print('******** Simulation Finished ********\n')
+        print(self.performance)
+
+        df = pd.DataFrame.from_dict(self.performance, orient='index', columns=['Portfolio Value'])
+        df.index.name = 'Date'
+        #print(df)
+        #df.to_csv('simulation_performance.csv')
+
     def get_portfolio_value(self, date, rebalance):
         
         pv = 0

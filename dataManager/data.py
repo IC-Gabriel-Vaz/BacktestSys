@@ -37,10 +37,10 @@ class Data:
         return dbPath 
     
     def get_simulation_prices(self):
-
         conn = sqlite3.connect(self.dbPath)
 
         try:
+
             query_dates = f"""
                 SELECT DISTINCT ap.date
                 FROM AssetPrice ap
@@ -51,30 +51,22 @@ class Data:
             """
             date_df = pd.read_sql_query(query_dates, conn)
 
-            if not date_df.empty:
-                
-                start_date = date_df['date'].min()
-            else:
-                start_date = self.parameters.date1
+            start_date = date_df['date'].min() if not date_df.empty else self.parameters.date1
 
             query = f"""
                 SELECT 
                     ap.asset,
+                    aa.ticker,
                     ap.date,
                     ap.close
-                FROM 
-                    AssetPrice ap
-                JOIN 
-                    ApplicationAsset aa ON ap.asset = aa.asset
-                WHERE 
-                    aa.app = '{self.parameters.app}' AND
+                FROM AssetPrice ap
+                JOIN ApplicationAsset aa ON ap.asset = aa.asset
+                WHERE aa.app = '{self.parameters.app}' AND
                     ap.date BETWEEN '{start_date}' AND '{self.parameters.date2}'
-                ORDER BY 
-                    ap.asset, ap.date;
+                ORDER BY aa.ticker, ap.date
             """
             df = pd.read_sql_query(query, conn)
-
-            df_pivot = df.pivot(index='date', columns='asset', values='close')
+            df_pivot = df.pivot(index='date', columns='ticker', values='close')
             df_pivot.index = pd.to_datetime(df_pivot.index)
 
             return df_pivot
